@@ -188,13 +188,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### 📞 联系方式
 
-📧 Email: yadan1009@users.noreply.github.com
+如果您有任何问题或建议，请通过以下方式联系我：
+
+- 📧 Email: zwan0569@student.monash.edu
+- 💬 Issues: [GitHub Issues](https://github.com/yadan1009/dataanalysisplatform/issues)
 
 
 ---
 
 <div align="center">
-  <p>Made with ❤️ by Zhixi Platform Team | 智析平台团队</p>
+  <p>Made with ❤️ by Independent Developer | 独立开发者</p>
   <p>⭐ If this project helps you, please give us a star! | 如果这个项目对您有帮助，请给我们一个星标！</p>
 </div>
 
@@ -399,9 +402,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### 📞 Contact
 
-If you have any questions or suggestions, please contact us through:
+If you have any questions or suggestions, please contact me through:
 
-- 📧 Email: yadan1009@users.noreply.github.com
+- 📧 Email: zwan0569@student.monash.edu
 - 💬 Issues: [GitHub Issues](https://github.com/yadan1009/dataanalysisplatform/issues)
 
 ---
@@ -428,6 +431,6 @@ dataanalysisplatform/
 ---
 
 <div align="center">
-  <p>Made with ❤️ by Zhixi Platform Team | 智析平台团队</p>
+  <p>Made with ❤️ by Independent Developer | 独立开发者</p>
   <p>⭐ If this project helps you, please give us a star! | 如果这个项目对您有帮助，请给我们一个星标！</p>
 </div> 
