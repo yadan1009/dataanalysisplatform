@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智析平台 - AI数据分析平台</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 背景粒子效果 -->
+    <div class="particles-container">
+        <div class="particle" style="--delay: 0s; --duration: 20s;"></div>
+        <div class="particle" style="--delay: -5s; --duration: 25s;"></div>
+        <div class="particle" style="--delay: -10s; --duration: 30s;"></div>
+        <div class="particle" style="--delay: -15s; --duration: 22s;"></div>
+        <div class="particle" style="--delay: -8s; --duration: 28s;"></div>
+    </div>
+
+    <!-- 侧边栏 -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">🧠</div>
+                <h2>智析平台</h2>
+            </div>
+        </div>
+        
+        <div class="session-section">
+            <button class="new-chat-btn" onclick="createNewSession()">
+                <span class="btn-icon">✨</span>
+                <span>新建对话</span>
+            </button>
+            <div id="sessionList" class="session-list"></div>
+        </div>
+        
+        <div class="tools-section">
+            <h4 class="tools-title">数据工具</h4>
+            <button class="tool-btn" id="excelToolBtn">
+                <span class="tool-icon">📊</span>
+                <span>智能数据治理</span>
+            </button>
+            <button class="tool-btn" id="dataAnalysisBtn">
+                <span class="tool-icon">📈</span>
+                <span>智能分析报告</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <!-- 聊天视图 -->
+        <div id="chatView" class="view-container">
+            <div class="header">
+                <div class="mode-display">
+                    <div class="current-mode">
+                        <span class="mode-indicator"></span>
+                        <span>当前模式：</span>
+                        <span id="currentModeText" class="mode-text">普通模式</span>
+                    </div>
+                </div>
+                <button class="settings-btn" onclick="toggleSettings()">
+                    <span class="settings-icon">⚙️</span>
+                    <span>设置</span>
+                </button>
+            </div>
+
+            <!-- 设置面板 -->
+            <div id="settingsPanel" class="settings-panel">
+                <div class="settings-header">
+                    <h3>对话设置</h3>
+                    <button class="settings-close" onclick="toggleSettings()">×</button>
+                </div>
+                
+                <div class="settings-content">
+                    <div class="mode-selector">
+                        <h4>选择模式</h4>
+                        <div class="mode-options">
+                            <label class="mode-option">
+                                <input type="radio" id="normalMode" name="mode" value="normal" checked>
+                                <div class="mode-card">
+                                    <div class="mode-icon">💬</div>
+                                    <div class="mode-info">
+                                        <div class="mode-name">普通模式</div>
+                                        <div class="mode-desc">标准AI对话</div>
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="mode-option">
+                                <input type="radio" id="knowledgeMode" name="mode" value="knowledge">
+                                <div class="mode-card">
+                                    <div class="mode-icon">📚</div>
+                                    <div class="mode-info">
+                                        <div class="mode-name">知识库模式</div>
+                                        <div class="mode-desc">基于文档问答</div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="mode-lock-tip" id="modeLockTip">
+                            🔒 会话进行中，模式已锁定。新建对话可切换模式。
+                        </div>
+                    </div>
+
+                    <!-- 普通模式设置 -->
+                    <div id="normalSettings" class="settings-section">
+                        <h4>普通模式设置</h4>
+                        <p class="section-desc">在对话开始前设置AI的初始人设和行为</p>
+                        <textarea id="initialPrompt" class="prompt-textarea" 
+                            placeholder="例如：你是一个友好的助手，请用简洁明了的方式回答问题。"></textarea>
+                        <button onclick="savePrompt()" class="save-btn">保存设置</button>
+                    </div>
+
+                    <!-- 知识库模式设置 -->
+                    <div id="knowledgeSettings" class="settings-section" style="display: none;">
+                        <h4>知识库模式设置</h4>
+                        <p class="section-desc">支持上传 TXT、PDF、DOCX、MD 格式的文件</p>
+                        <div class="file-upload-area" onclick="document.getElementById('fileInput').click()">
+                            <div class="upload-icon">📁</div>
+                            <p>拖拽文件到此处或点击上传</p>
+                            <input type="file" id="fileInput" style="display: none;" accept=".txt,.pdf,.doc,.docx,.md">
+                        </div>
+                        <div id="fileList" class="file-list"></div>
+                        <div id="uploadStatus" class="upload-status"></div>
+                        <button onclick="clearKnowledge()" class="clear-btn">清空知识库</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-container">
+                <div id="chatMessages" class="chat-messages">
+                    <div class="welcome-message">
+                        <div class="welcome-icon">👋</div>
+                        <h3>欢迎使用智析平台</h3>
+                        <p>我是您的AI助手，可以帮您进行数据分析、文档问答等任务</p>
+                    </div>
+                </div>
+                <div class="input-container">
+                    <div class="input-wrapper">
+                        <input type="text" id="messageInput" placeholder="请输入您的问题..." />
+                        <button id="sendButton" type="button">
+                            <span class="send-icon">📤</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Excel工具视图 -->
+        <div id="excelView" class="view-container" style="display: none;">
+            <div class="tool-header">
+                <div class="tool-icon">📊</div>
+                <div class="tool-info">
+                    <h2>智能数据治理</h2>
+                    <p>自动处理合并单元格、复杂表头，让数据分析更轻松</p>
+                </div>
+            </div>
+            
+            <div class="tool-content">
+                <div id="excelUploadContainer" class="upload-container">
+                    <div class="file-upload-area large" id="excelUploadArea">
+                        <div class="upload-icon">📊</div>
+                        <h3>上传Excel文件</h3>
+                        <p>点击或拖拽 Excel 文件到此处</p>
+                        <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;">
+                    </div>
+                    <p id="excelFileName" class="file-name"></p>
+                    <button id="processExcelBtn" class="process-btn" disabled>
+                        <span class="btn-icon">🚀</span>
+                        开始处理
+                    </button>
+                </div>
+                
+                <div id="excelResultsContainer" class="results-container" style="display: none;">
+                    <div class="results-header">
+                        <h3>📋 处理完毕</h3>
+                        <div id="excelSummary" class="summary-card"></div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <a id="downloadExcelLink" class="download-btn">
+                            <span class="btn-icon">⬇️</span>
+                            下载处理后的文件
+                        </a>
+                    </div>
+                    
+                    <div class="preview-section">
+                        <h4>📄 数据预览 (前10条)</h4>
+                        <div class="table-container">
+                            <table id="excelPreviewTable" class="data-table"></table>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-section">
+                        <div class="ai-header">
+                            <h3>🤖 AI辅助数据处理</h3>
+                            <p>输入自然语言指令，让AI直接处理数据</p>
+                        </div>
+                        
+                        <div class="ai-input-container">
+                            <input type="text" id="aiCommandInput" placeholder="例如：计算销售提成，提成比例为销售额的5%...">
+                            <button id="processAiCommandBtn" class="ai-process-btn">
+                                <span class="btn-icon">✨</span>
+                                提交指令
+                            </button>
+                        </div>
+                        
+                        <div id="aiResultContainer" class="ai-results" style="display: none;">
+                            <h4>🎯 AI处理结果</h4>
+                            <div id="aiResultSummary" class="ai-summary"></div>
+                            <a id="downloadAiProcessedLink" class="download-btn">
+                                <span class="btn-icon">⬇️</span>
+                                下载AI处理后的文件
+                            </a>
+                            
+                            <div class="preview-section">
+                                <h4>📊 处理后数据预览</h4>
+                                <div class="table-container">
+                                    <table id="aiProcessedTable" class="data-table"></table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 数据分析视图 -->
+        <div id="dataAnalysisView" class="view-container" style="display: none;">
+            <div class="tool-header">
+                <div class="tool-icon">📈</div>
+                <div class="tool-info">
+                    <h2>智能分析报告</h2>
+                    <p>上传数据文件，获取AI生成的专业数据分析报告</p>
+                </div>
+            </div>
+            
+            <div class="tool-content">
+                <div id="analysisUploadContainer" class="upload-container">
+                    <div class="file-upload-area large" id="analysisUploadArea">
+                        <div class="upload-icon">📈</div>
+                        <h3>上传数据文件</h3>
+                        <p>点击或拖拽数据文件到此处</p>
+                        <div class="supported-formats">支持 Excel (.xlsx/.xls) 和 CSV 文件</div>
+                        <input type="file" id="analysisFileInput" accept=".xlsx, .xls, .csv" style="display:none;">
+                    </div>
+                    <p id="analysisFileName" class="file-name"></p>
+                    <button id="startAnalysisBtn" class="process-btn" disabled>
+                        <span class="btn-icon">🔍</span>
+                        开始分析
+                    </button>
+                </div>
+                
+                <div id="analysisResultsContainer" class="results-container" style="display: none;">
+                    <div class="results-header">
+                        <h3>📊 数据分析报告</h3>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h4>📋 基础统计</h4>
+                            <div id="basicStatsContent"></div>
+                        </div>
+                        <div class="stat-card">
+                            <h4>🔢 数值统计</h4>
+                            <div id="numericStatsContent"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-card">
+                        <a id="downloadAnalysisLink" class="download-btn">
+                            <span class="btn-icon">⬇️</span>
+                            下载完整分析报告
+                        </a>
+                    </div>
+                    
+                    <div class="stat-card full-width">
+                        <h4>📈 分类数据统计</h4>
+                        <div id="categoricalStatsContent"></div>
+                    </div>
+                    
+                    <div class="preview-section">
+                        <h4>📄 数据预览</h4>
+                        <div class="table-container">
+                            <table id="analysisPreviewTable" class="data-table"></table>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-analysis-section">
+                        <h3>🤖 AI 数据分析报告</h3>
+                        <div id="aiAnalysisContent" class="ai-report"></div>
+                    </div>
+                    
+                    <div class="visualization-section">
+                        <h3>📊 数据可视化分析</h3>
+                        <div id="visualizationLoading" class="loading-container">
+                            <div class="loading-spinner"></div>
+                            <p>正在生成数据可视化图表，请稍候...</p>
+                        </div>
+                        <div id="visualizationError" class="error-container" style="display: none;">
+                            <h4>❌ 可视化生成失败</h4>
+                            <p id="visualizationErrorMessage"></p>
+                        </div>
+                        <div id="visualizationGallery" class="chart-gallery" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html> 
